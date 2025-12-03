@@ -1,0 +1,9 @@
+[versions]
+paper = "1.21.8-R0.1-SNAPSHOT"
+conventions = "1.0.6"
+
+[libraries]
+paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
+
+[plugins]
+conventions-publishing = { id = "net.earthmc.conventions.publishing", version.ref = "conventions" }
