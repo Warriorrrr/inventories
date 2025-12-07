@@ -71,7 +71,7 @@ public interface ClickAction {
         return new ClickTypeAction(type, rightClickAction);
     }
 
-    static UserInputAction userInput(String title, Function<PlayerInput, InputResponse> inputFunction) {
+    static UserInputAction userInput(Component title, Function<PlayerInput, InputResponse> inputFunction) {
         return new UserInputAction(title, completion -> Collections.singletonList(inputFunction.apply(completion)));
     }
 }

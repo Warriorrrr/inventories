@@ -27,9 +27,13 @@ public class Inventories {
         INSTANCE = this;
 
         listeners.addAll(List.of(new PlayerListener(), new InventoryListener()));
-        listeners.forEach(listener -> plugin.getServer().getPluginManager().registerEvents(listener, plugin));
 
         this.userInputBackend = UserInputBackend.selectBackend(plugin);
+        if (this.userInputBackend instanceof Listener listener) {
+            listeners.add(listener);
+        }
+
+        listeners.forEach(listener -> plugin.getServer().getPluginManager().registerEvents(listener, plugin));
     }
 
     public void disable() {

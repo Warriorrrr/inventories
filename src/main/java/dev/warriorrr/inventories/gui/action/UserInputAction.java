@@ -12,16 +12,16 @@ import java.util.List;
 import java.util.function.Function;
 
 public class UserInputAction implements ClickAction {
-    private final String title;
+    private final Component title;
     private final Function<PlayerInput, List<InputResponse>> inputFunction;
 
-    public UserInputAction(String title, Function<PlayerInput, List<InputResponse>> inputFunction) {
+    public UserInputAction(Component title, Function<PlayerInput, List<InputResponse>> inputFunction) {
         this.title = title;
         this.inputFunction = inputFunction;
     }
 
     @Override
     public void onClick(MenuInventory inventory, InventoryClickEvent event) {
-        Inventories.getInstance().getUserInputBackend().startAwaitingInput((Player) event.getWhoClicked(), inventory, Component.text(title), inputFunction);
+        Inventories.getInstance().getUserInputBackend().startAwaitingInput((Player) event.getWhoClicked(), inventory, title, inputFunction);
     }
 }
