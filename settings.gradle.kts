@@ -10,3 +10,4 @@ plugins {
 }
 
 rootProject.name = "inventories"
+include("test-plugin")

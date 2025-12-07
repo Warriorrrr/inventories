@@ -12,8 +12,6 @@ dependencies {
 }
 
 earthmc {
-    mainBranch = null
-
     publishing {
         public = true
         repositoryName = "warrior"

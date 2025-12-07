@@ -1,9 +1,13 @@
 [versions]
 paper = "1.21.8-R0.1-SNAPSHOT"
-conventions = "1.0.6"
+conventions = "1.0.7"
+run-paper = "3.0.2"
+shadow = "9.3.0"
 
 [libraries]
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
 
 [plugins]
 conventions-publishing = { id = "net.earthmc.conventions.publishing", version.ref = "conventions" }
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
