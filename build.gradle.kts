@@ -11,6 +11,12 @@ dependencies {
     compileOnly(libs.paper)
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 earthmc {
     publishing {
         public = true

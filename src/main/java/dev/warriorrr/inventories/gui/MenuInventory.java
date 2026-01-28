@@ -27,10 +27,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supplier<MenuInventory> {
-    private static final ItemStack backgroundGlass = MenuItem.builder(Material.GRAY_STAINED_GLASS_PANE).name(Component.empty()).build().itemStack();
+    private static final ItemStack BACKGROUND_GLASS = MenuItem.builder(Material.GRAY_STAINED_GLASS_PANE).name(Component.empty()).build().itemStack();
     private final Inventory inventory;
     private final int size;
     private final Map<Integer, List<ClickAction>> clickActions = new HashMap<>();
@@ -121,6 +122,7 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
         private final List<MenuItem> items = new ArrayList<>();
         private int size = 54;
         private Component title = Component.empty();
+        private @Nullable ItemStack backgroundItem;
 
         private Builder() {}
 
@@ -148,6 +150,11 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
             return this;
         }
 
+        public Builder backgroundItem(@Nullable ItemStack backgroundItem) {
+            this.backgroundItem = backgroundItem;
+            return this;
+        }
+
         public MenuInventory build() {
             Inventory inventory = Bukkit.createInventory(null, size, Component.text(PlainTextComponentSerializer.plainText().serialize(title)));
 
@@ -165,9 +172,13 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
                     actions.put(slot, item.actions());
             }
 
-            for (int i = 0; i < size; i++)
-                if (inventory.getItem(i) == null)
-                    inventory.setItem(i, backgroundGlass);
+            for (int i = 0; i < size; i++) {
+                final ItemStack stack = inventory.getItem(i);
+
+                if (stack == null || stack.isEmpty()) {
+                    inventory.setItem(i, Objects.requireNonNullElse(this.backgroundItem, BACKGROUND_GLASS));
+                }
+            }
 
             MenuInventory menuInventory = new MenuInventory(inventory, title);
             menuInventory.addActions(actions);
