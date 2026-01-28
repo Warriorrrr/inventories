@@ -1,5 +1,6 @@
 package dev.warriorrr.inventories.gui;
 
+import com.google.common.base.Preconditions;
 import dev.warriorrr.inventories.Inventories;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -20,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -192,6 +194,7 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
         private final List<MenuItem> extraItems = new ArrayList<>(0);
         private Component title = Component.empty();
         private boolean showPageCount = true;
+        private int maxRows = 5;
 
         public PaginatorBuilder addItem(MenuItem item) {
             this.items.add(item);
@@ -228,18 +231,30 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
             return this;
         }
 
+        /**
+         * Sets the maximum number of rows that can be displayed per page.
+         * @param rows The maximum number of rows.
+         * @return {@code this}
+         */
+        public PaginatorBuilder maxRows(final @Range(from = 1, to = 5) int rows) {
+            Preconditions.checkArgument(rows > 0 && rows < 6, "Rows must be between 1 and 5, got " + rows);
+            this.maxRows = rows;
+            return this;
+        }
+
         public MenuInventory build() {
             if (this.items.isEmpty())
                 this.items.add(MenuItem.builder(Material.BARRIER)
                         .name(Component.text("No entries to list.", NamedTextColor.RED))
                         .build());
 
-            // Each page can hold 45 items (5 rows), the bottom row is reserved for forward/back buttons.
-            int pageCount = (int) Math.ceil(items.size() / 45d);
+            final int maxItems = maxRows * 9;
+            // Each page can hold 45 items (5 rows) maximum, the bottom row is reserved for forward/back buttons.
+            int pageCount = (int) Math.ceil((double) items.size() / maxItems);
             MenuInventory[] inventories = new MenuInventory[pageCount];
 
             for (int i = 0; i < pageCount; i++) {
-                List<MenuItem> pageItems = items.subList(i * 45, Math.min((i + 1) * 45, items.size()));
+                List<MenuItem> pageItems = items.subList(i * maxItems, Math.min((i + 1) * maxItems, items.size()));
 
                 MenuInventory.Builder builder = MenuInventory.builder()
                         .size(pageItems.size() + 9)

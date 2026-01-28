@@ -28,6 +28,18 @@ public class InventoriesTestPlugin extends JavaPlugin {
                                     ctx.getSource().getSender().sendPlainMessage("You entered: " + input.getText());
                                     return InputResponse.finish();
                                 })).build())
+                        .addItem(MenuItem.builder(Material.ACACIA_BOAT)
+                                .name(Component.text("pagination with limited rows"))
+                                .slot(1)
+                                .action(ClickAction.openInventory(() -> {
+                                    final MenuInventory.PaginatorBuilder builder = MenuInventory.paginator();
+                                    builder.maxRows(2);
+                                    for (int i = 0; i < 100; i++) {
+                                        builder.addItem(MenuItem.builder(Material.DIRT).name(Component.text(i)).build());
+                                    }
+                                    return builder.build();
+                                }))
+                                .build())
                         .build().open((Player) ctx.getSource().getSender());
                 return Command.SINGLE_SUCCESS;
             }).build());

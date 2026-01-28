@@ -13,6 +13,12 @@ dependencies {
     compileOnly(libs.paper)
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 tasks {
     runServer {
         minecraftVersion(libs.versions.paper.get().substringBefore("-"))
