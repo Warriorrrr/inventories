@@ -11,6 +11,7 @@ import dev.warriorrr.inventories.gui.input.response.OpenPreviousMenu;
 import dev.warriorrr.inventories.gui.input.response.ReOpen;
 import dev.warriorrr.inventories.gui.input.response.ErrorMessage;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
@@ -63,6 +64,19 @@ public class TextInputBackend implements UserInputBackend, Listener {
                 //p.sendRichMessage(Translatable.of("townymenus:plugin-prefix").append(Translatable.of("chat-input-timed-out")).forLocale(p));
             }
         }, INPUT_TIMEOUT.getSeconds(), TimeUnit.SECONDS));
+    }
+
+    @Override
+    public void disable() {
+        for (final TextInputSession session : sessions.values()) {
+            final ScheduledTask timeoutTask = session.timeoutTask();
+
+            if (timeoutTask != null) {
+                timeoutTask.cancel();
+            }
+        }
+
+        sessions.clear();
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

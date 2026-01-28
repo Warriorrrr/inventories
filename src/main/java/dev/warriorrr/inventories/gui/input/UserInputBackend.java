@@ -13,6 +13,8 @@ import java.util.function.Function;
 public interface UserInputBackend {
     void startAwaitingInput(final Player player, final MenuInventory currentInventory, final Component title, Function<PlayerInput, List<InputResponse>> inputFunction);
 
+    default void disable() {}
+
     static UserInputBackend selectBackend(JavaPlugin plugin) {
         return new SignInputBackend(plugin);
     }

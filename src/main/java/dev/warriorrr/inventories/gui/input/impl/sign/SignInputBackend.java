@@ -99,6 +99,16 @@ public class SignInputBackend implements UserInputBackend, Listener {
         }
     }
 
+    @Override
+    public void disable() {
+        for (final Player player : plugin.getServer().getOnlinePlayers()) {
+            cancel(player, true);
+        }
+
+        sessionsByLocation.clear();
+        sessionsByPlayer.clear();
+    }
+
     @EventHandler
     public void cancelSession(PlayerQuitEvent event) {
         cancel(event.getPlayer(), false);

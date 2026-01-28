@@ -1,8 +1,10 @@
 package dev.warriorrr.inventories;
 
+import dev.warriorrr.inventories.gui.MenuHistory;
 import dev.warriorrr.inventories.gui.input.UserInputBackend;
 import dev.warriorrr.inventories.listeners.InventoryListener;
 import dev.warriorrr.inventories.listeners.PlayerListener;
+import dev.warriorrr.inventories.listeners.ShutdownListener;
 import dev.warriorrr.inventories.utils.MenuScheduler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -26,7 +28,7 @@ public class Inventories {
 
         INSTANCE = this;
 
-        listeners.addAll(List.of(new PlayerListener(), new InventoryListener()));
+        listeners.addAll(List.of(new PlayerListener(), new InventoryListener(), new ShutdownListener(this)));
 
         this.userInputBackend = UserInputBackend.selectBackend(plugin);
         if (this.userInputBackend instanceof Listener listener) {
@@ -39,6 +41,9 @@ public class Inventories {
     public void disable() {
         listeners.forEach(HandlerList::unregisterAll);
         listeners.clear();
+
+        MenuHistory.clearAllHistory();
+        this.userInputBackend.disable();
     }
 
     public static Builder forPlugin(final JavaPlugin plugin) {
