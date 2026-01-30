@@ -154,9 +154,7 @@ public class MenuItem {
         }
 
         public Builder lore(@NotNull Component lore) {
-            if (!lore.equals(Component.empty()))
-                this.lore.add(lore.decoration(TextDecoration.ITALIC, false));
-
+            this.lore.add(lore.decoration(TextDecoration.ITALIC, false));
             return this;
         }
 
