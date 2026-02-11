@@ -1,11 +1,13 @@
 package dev.warriorrr.inventories;
 
 import dev.warriorrr.inventories.gui.MenuHistory;
+import dev.warriorrr.inventories.gui.MenuInventory;
 import dev.warriorrr.inventories.gui.input.UserInputBackend;
 import dev.warriorrr.inventories.listeners.InventoryListener;
 import dev.warriorrr.inventories.listeners.PlayerListener;
 import dev.warriorrr.inventories.listeners.ShutdownListener;
 import dev.warriorrr.inventories.utils.MenuScheduler;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,6 +41,12 @@ public class Inventories {
     }
 
     public void disable() {
+        for (final Player player : plugin.getServer().getOnlinePlayers()) {
+            if (player.getOpenInventory().getTopInventory().getHolder(false) instanceof MenuInventory) {
+                player.closeInventory();
+            }
+        }
+
         listeners.forEach(HandlerList::unregisterAll);
         listeners.clear();
 
