@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.conventions.java)
     alias(libs.plugins.conventions.publishing)
 }
 
