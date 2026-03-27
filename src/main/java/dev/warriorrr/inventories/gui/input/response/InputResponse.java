@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 /**
  * Different actions for responding to user input.
  */
-public interface InputResponse {
+public sealed interface InputResponse permits ErrorMessage, Finish, Nothing, OpenPreviousMenu, ReOpen {
     static InputResponse reOpen(Supplier<MenuInventory> supplier) {
         return new ReOpen(supplier);
     }
