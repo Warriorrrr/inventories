@@ -1,11 +1,9 @@
 package dev.warriorrr.inventories.gui.input;
 
 import dev.warriorrr.inventories.gui.MenuInventory;
-import dev.warriorrr.inventories.gui.input.impl.sign.SignInputBackend;
 import dev.warriorrr.inventories.gui.input.response.InputResponse;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.function.Function;
@@ -13,9 +11,10 @@ import java.util.function.Function;
 public interface UserInputBackend {
     void startAwaitingInput(final Player player, final MenuInventory currentInventory, final Component title, Function<PlayerInput, List<InputResponse>> inputFunction);
 
-    default void disable() {}
+    /**
+     * {@return the maximum supported text length for this input backend type}
+     */
+    TextLength maximumTextLength();
 
-    static UserInputBackend selectBackend(JavaPlugin plugin) {
-        return new SignInputBackend(plugin);
-    }
+    default void disable() {}
 }

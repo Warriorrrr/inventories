@@ -5,6 +5,7 @@ import dev.warriorrr.inventories.Inventories;
 import dev.warriorrr.inventories.gui.MenuInventory;
 import dev.warriorrr.inventories.gui.MenuItem;
 import dev.warriorrr.inventories.gui.action.ClickAction;
+import dev.warriorrr.inventories.gui.input.TextLength;
 import dev.warriorrr.inventories.gui.input.response.InputResponse;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -24,7 +25,7 @@ public class InventoriesTestPlugin extends JavaPlugin {
                         .title(Component.text("hi"))
                         .rows(3)
                         .addItem(MenuItem.builder(Material.RED_WOOL)
-                                .action(ClickAction.userInput(Component.text("enter your text"), input -> {
+                                .action(ClickAction.userInput(Component.text("enter your text"), TextLength.ofAtLeast(15), input -> {
                                     ctx.getSource().getSender().sendPlainMessage("You entered: " + input.getText());
                                     return InputResponse.finish();
                                 })).build())

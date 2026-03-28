@@ -2,6 +2,8 @@ package dev.warriorrr.inventories.gui.input.impl.text;
 
 import dev.warriorrr.inventories.gui.MenuHistory;
 import dev.warriorrr.inventories.gui.MenuInventory;
+import dev.warriorrr.inventories.gui.input.TextLength;
+import dev.warriorrr.inventories.gui.input.TextLengths;
 import dev.warriorrr.inventories.gui.input.response.Finish;
 import dev.warriorrr.inventories.gui.input.response.InputResponse;
 import dev.warriorrr.inventories.gui.input.PlayerInput;
@@ -64,6 +66,11 @@ public class TextInputBackend implements UserInputBackend, Listener {
                 //p.sendRichMessage(Translatable.of("townymenus:plugin-prefix").append(Translatable.of("chat-input-timed-out")).forLocale(p));
             }
         }, INPUT_TIMEOUT.getSeconds(), TimeUnit.SECONDS));
+    }
+
+    @Override
+    public TextLength maximumTextLength() {
+        return TextLengths.LONG;
     }
 
     @Override

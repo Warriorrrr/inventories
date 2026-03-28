@@ -3,6 +3,8 @@ package dev.warriorrr.inventories.gui.input.impl.sign;
 import dev.warriorrr.inventories.gui.MenuHistory;
 import dev.warriorrr.inventories.gui.MenuInventory;
 import dev.warriorrr.inventories.gui.input.PlayerInput;
+import dev.warriorrr.inventories.gui.input.TextLength;
+import dev.warriorrr.inventories.gui.input.TextLengths;
 import dev.warriorrr.inventories.gui.input.UserInputBackend;
 import dev.warriorrr.inventories.gui.input.response.ErrorMessage;
 import dev.warriorrr.inventories.gui.input.response.Finish;
@@ -64,6 +66,13 @@ public class SignInputBackend implements UserInputBackend, Listener {
         sessionsByPlayer.put(player.getUniqueId(), session);
     }
 
+    @Override
+    public TextLength maximumTextLength() {
+        // the maximum length for a sign is a bit complicated since it's dependent on the font and characters being used except for a hard limit of 50
+        // the limit when using characters in the English alphabet is 15, so that'll be used here
+        return TextLengths.SHORT;
+    }
+
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onUncheckedSignChange(UncheckedSignChangeEvent event) {
         final SignInputSession session = sessionsByLocation.get(event.getEditedBlockPosition().toLocation(event.getPlayer().getWorld()));
@@ -116,7 +125,7 @@ public class SignInputBackend implements UserInputBackend, Listener {
 
     @EventHandler
     public void cancelSession(PlayerInputEvent event) {
-        // players typically don't send input events with an open sign, so
+        // players typically don't send input events with an open sign, so use the input event to clean up after ourselves
         cancel(event.getPlayer(), true);
     }
 

@@ -10,6 +10,12 @@ repositories {
 
 dependencies {
     compileOnly(libs.paper)
+
+    testImplementation(libs.paper)
+    testImplementation(libs.junit.api)
+    testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.launcher)
+    testImplementation(libs.mockito)
 }
 
 java {
@@ -23,5 +29,11 @@ earthmc {
         public = true
         repositoryName = "warrior"
         repositoryUrl = "https://repo.warriorrr.dev"
+    }
+}
+
+tasks {
+    test {
+        useJUnitPlatform()
     }
 }

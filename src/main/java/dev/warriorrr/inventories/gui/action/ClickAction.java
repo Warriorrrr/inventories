@@ -1,5 +1,7 @@
 package dev.warriorrr.inventories.gui.action;
 
+import dev.warriorrr.inventories.gui.input.TextLength;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import dev.warriorrr.inventories.gui.MenuInventory;
@@ -73,5 +75,13 @@ public interface ClickAction {
 
     static UserInputAction userInput(Component title, Function<PlayerInput, InputResponse> inputFunction) {
         return new UserInputAction(title, completion -> Collections.singletonList(inputFunction.apply(completion)));
+    }
+
+    static UserInputAction userInput(final Component title, final TextLength textLength, final Function<PlayerInput, InputResponse> inputFunction) {
+        return new UserInputAction(title, completion -> Collections.singletonList(inputFunction.apply(completion)), null, textLength);
+    }
+
+    static UserInputAction userInput(final Component title, final Key inputBackendKey, final Function<PlayerInput, InputResponse> inputFunction) {
+        return new UserInputAction(title, completion -> Collections.singletonList(inputFunction.apply(completion)), inputBackendKey, null);
     }
 }
