@@ -7,7 +7,7 @@ import dev.warriorrr.inventories.gui.input.BuiltinInputMethods;
 import dev.warriorrr.inventories.gui.input.InputBackendRegistry;
 import dev.warriorrr.inventories.gui.input.UserInputBackend;
 import dev.warriorrr.inventories.gui.input.impl.sign.SignInputBackend;
-import dev.warriorrr.inventories.gui.input.impl.text.TextInputBackend;
+import dev.warriorrr.inventories.gui.input.impl.text.ChatInputBackend;
 import dev.warriorrr.inventories.listeners.InventoryListener;
 import dev.warriorrr.inventories.listeners.PlayerListener;
 import dev.warriorrr.inventories.listeners.ShutdownListener;
@@ -93,7 +93,7 @@ public class Inventories {
             this.plugin = plugin;
 
             addInputBackend(BuiltinInputMethods.SIGN, new SignInputBackend(plugin));
-            addInputBackend(BuiltinInputMethods.CHAT, new TextInputBackend(plugin));
+            addInputBackend(BuiltinInputMethods.CHAT, new ChatInputBackend(plugin));
         }
 
         public Builder addInputBackend(final Key key, final UserInputBackend backend) {

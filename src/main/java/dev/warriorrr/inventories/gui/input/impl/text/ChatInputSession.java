@@ -8,12 +8,12 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.function.Function;
 
-public class TextInputSession {
+public class ChatInputSession {
     private final MenuInventory currentInventory;
     private final Function<PlayerInput, List<InputResponse>> inputFunction;
     private ScheduledTask timeoutTask;
 
-    public TextInputSession(final MenuInventory currentInventory, final Function<PlayerInput, List<InputResponse>> inputFunction) {
+    public ChatInputSession(final MenuInventory currentInventory, final Function<PlayerInput, List<InputResponse>> inputFunction) {
         this.currentInventory = currentInventory;
         this.inputFunction = inputFunction;
     }

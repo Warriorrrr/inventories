@@ -33,20 +33,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class TextInputBackend implements UserInputBackend, Listener {
+public class ChatInputBackend implements UserInputBackend, Listener {
     private static final Duration INPUT_TIMEOUT = Duration.ofSeconds(60);
     private static final Collection<String> CANCEL_PHRASES = Set.of("q", "quit", "cancel", "stop");
 
     private final JavaPlugin plugin;
-    private final Map<UUID, TextInputSession> sessions = new ConcurrentHashMap<>();
+    private final Map<UUID, ChatInputSession> sessions = new ConcurrentHashMap<>();
 
-    public TextInputBackend(JavaPlugin plugin) {
+    public ChatInputBackend(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public void startAwaitingInput(final Player player, final MenuInventory currentInventory, final Component title, final Function<PlayerInput, List<InputResponse>> inputFunction) {
-        final TextInputSession session = new TextInputSession(currentInventory, inputFunction);
+        final ChatInputSession session = new ChatInputSession(currentInventory, inputFunction);
         final UUID uuid = player.getUniqueId();
 
         cancelSession(uuid);
@@ -75,7 +75,7 @@ public class TextInputBackend implements UserInputBackend, Listener {
 
     @Override
     public void disable() {
-        for (final TextInputSession session : sessions.values()) {
+        for (final ChatInputSession session : sessions.values()) {
             final ScheduledTask timeoutTask = session.timeoutTask();
 
             if (timeoutTask != null) {
@@ -90,7 +90,7 @@ public class TextInputBackend implements UserInputBackend, Listener {
     public void listenForInput(AsyncChatEvent event) {
         final Player player = event.getPlayer();
 
-        final TextInputSession session = sessions.get(player.getUniqueId());
+        final ChatInputSession session = sessions.get(player.getUniqueId());
         if (session == null)
             return;
 
@@ -129,7 +129,7 @@ public class TextInputBackend implements UserInputBackend, Listener {
     }
 
     private void cancelSession(UUID uuid) {
-        final TextInputSession session = sessions.remove(uuid);
+        final ChatInputSession session = sessions.remove(uuid);
         if (session != null && session.timeoutTask() != null) {
             session.timeoutTask().cancel();
         }
