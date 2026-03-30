@@ -3,7 +3,6 @@ package dev.warriorrr.inventories.gui.action;
 import dev.warriorrr.inventories.Inventories;
 import dev.warriorrr.inventories.gui.MenuInventory;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
@@ -19,9 +18,7 @@ public class OpenInventoryAction implements ClickAction {
 
     @Override
     public void onClick(MenuInventory inventory, InventoryClickEvent event) {
-        final JavaPlugin plugin = Inventories.getInstance().getPlugin();
-
-        plugin.getServer().getAsyncScheduler().runNow(plugin, task -> {
+        Inventories.getInstance().getScheduler().scheduleAsync(event.getWhoClicked(), () -> {
             final MenuInventory built = supplier.get();
 
             if (silent) {
