@@ -3,12 +3,12 @@ package dev.warriorrr.inventories.gui.action;
 import dev.warriorrr.inventories.Inventories;
 import dev.warriorrr.inventories.event.input.StartAwaitingInputEvent;
 import dev.warriorrr.inventories.gui.MenuInventory;
-import dev.warriorrr.inventories.gui.input.InputBackendRegistry;
+import dev.warriorrr.inventories.gui.input.InputMethodRegistry;
 import dev.warriorrr.inventories.gui.input.InputMethodKey;
 import dev.warriorrr.inventories.gui.input.InputOptionsBuilder;
 import dev.warriorrr.inventories.gui.input.TextLength;
 import dev.warriorrr.inventories.gui.input.TextLengths;
-import dev.warriorrr.inventories.gui.input.UserInputBackend;
+import dev.warriorrr.inventories.gui.input.UserInputMethod;
 import dev.warriorrr.inventories.gui.input.response.InputResponse;
 import dev.warriorrr.inventories.gui.input.PlayerInput;
 import net.kyori.adventure.text.Component;
@@ -44,9 +44,9 @@ public class UserInputAction<T extends InputOptionsBuilder> implements ClickActi
 
     @Override
     public void onClick(MenuInventory inventory, InventoryClickEvent event) {
-        final InputBackendRegistry registry = Inventories.getInstance().inputBackendRegistry();
+        final InputMethodRegistry registry = Inventories.getInstance().inputBackendRegistry();
 
-        final UserInputBackend<T> backend;
+        final UserInputMethod<T> backend;
         if (this.key != null) {
             backend = Objects.requireNonNull(registry.backend(this.key.key()), () -> "could not find input backend for key '" + this.key.key().asString() + "'");
         } else {

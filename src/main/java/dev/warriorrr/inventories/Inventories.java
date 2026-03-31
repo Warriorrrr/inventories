@@ -4,12 +4,12 @@ import com.google.common.base.Preconditions;
 import dev.warriorrr.inventories.gui.MenuHistory;
 import dev.warriorrr.inventories.gui.MenuInventory;
 import dev.warriorrr.inventories.gui.input.BuiltinInputMethods;
-import dev.warriorrr.inventories.gui.input.InputBackendRegistry;
+import dev.warriorrr.inventories.gui.input.InputMethodRegistry;
 import dev.warriorrr.inventories.gui.input.InputMethodKey;
 import dev.warriorrr.inventories.gui.input.InputOptionsBuilder;
-import dev.warriorrr.inventories.gui.input.UserInputBackend;
-import dev.warriorrr.inventories.gui.input.impl.sign.SignInputBackend;
-import dev.warriorrr.inventories.gui.input.impl.text.ChatInputBackend;
+import dev.warriorrr.inventories.gui.input.UserInputMethod;
+import dev.warriorrr.inventories.gui.input.impl.sign.SignInputMethod;
+import dev.warriorrr.inventories.gui.input.impl.text.ChatInputMethod;
 import dev.warriorrr.inventories.listeners.InventoryListener;
 import dev.warriorrr.inventories.listeners.PlayerListener;
 import dev.warriorrr.inventories.listeners.ShutdownListener;
@@ -32,18 +32,18 @@ public class Inventories {
     private final JavaPlugin plugin;
     private final MenuScheduler scheduler;
     private final List<Listener> listeners = new ArrayList<>();
-    private final InputBackendRegistry inputBackendRegistry;
+    private final InputMethodRegistry inputBackendRegistry;
 
-    private Inventories(final JavaPlugin plugin, final Map<Key, UserInputBackend<?>> inputBackends) {
+    private Inventories(final JavaPlugin plugin, final Map<Key, UserInputMethod<?>> inputBackends) {
         this.plugin = plugin;
         this.scheduler = new MenuScheduler(plugin);
-        this.inputBackendRegistry = new InputBackendRegistry(inputBackends);
+        this.inputBackendRegistry = new InputMethodRegistry(inputBackends);
 
         INSTANCE = this;
 
         listeners.addAll(List.of(new PlayerListener(), new InventoryListener(), new ShutdownListener(this)));
 
-        for (final UserInputBackend<?> backend : inputBackends.values()) {
+        for (final UserInputMethod<?> backend : inputBackends.values()) {
             if (backend instanceof Listener listener) {
                 listeners.add(listener);
             }
@@ -66,7 +66,7 @@ public class Inventories {
         this.inputBackendRegistry.shutdown();
     }
 
-    public InputBackendRegistry inputBackendRegistry() {
+    public InputMethodRegistry inputBackendRegistry() {
         return this.inputBackendRegistry;
     }
 
@@ -89,16 +89,16 @@ public class Inventories {
 
     public static class Builder {
         private final JavaPlugin plugin;
-        private final Map<Key, UserInputBackend<?>> inputBackends = new LinkedHashMap<>();
+        private final Map<Key, UserInputMethod<?>> inputBackends = new LinkedHashMap<>();
 
         protected Builder(final JavaPlugin plugin) {
             this.plugin = plugin;
 
-            addInputBackend(BuiltinInputMethods.SIGN, new SignInputBackend(plugin));
-            addInputBackend(BuiltinInputMethods.CHAT, new ChatInputBackend(plugin));
+            addInputBackend(BuiltinInputMethods.SIGN, new SignInputMethod(plugin));
+            addInputBackend(BuiltinInputMethods.CHAT, new ChatInputMethod(plugin));
         }
 
-        public <T extends InputOptionsBuilder> Builder addInputBackend(final InputMethodKey<T> key, final UserInputBackend<T> backend) {
+        public <T extends InputOptionsBuilder> Builder addInputBackend(final InputMethodKey<T> key, final UserInputMethod<T> backend) {
             this.inputBackends.put(key.key(), backend);
             return this;
         }

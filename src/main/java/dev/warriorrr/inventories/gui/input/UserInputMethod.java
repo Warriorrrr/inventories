@@ -4,7 +4,7 @@ import dev.warriorrr.inventories.gui.MenuInventory;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 
-public interface UserInputBackend<T extends InputOptionsBuilder> {
+public interface UserInputMethod<T extends InputOptionsBuilder> {
     void startAwaitingInput(final Player player, final MenuInventory currentInventory, T options);
 
     /**

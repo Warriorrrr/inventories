@@ -5,7 +5,7 @@ import dev.warriorrr.inventories.gui.MenuInventory;
 import dev.warriorrr.inventories.gui.input.PlayerInput;
 import dev.warriorrr.inventories.gui.input.TextLength;
 import dev.warriorrr.inventories.gui.input.TextLengths;
-import dev.warriorrr.inventories.gui.input.UserInputBackend;
+import dev.warriorrr.inventories.gui.input.UserInputMethod;
 import dev.warriorrr.inventories.gui.input.response.ErrorMessage;
 import dev.warriorrr.inventories.gui.input.response.Finish;
 import dev.warriorrr.inventories.gui.input.response.InputResponse;
@@ -35,12 +35,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 @SuppressWarnings("UnstableApiUsage")
-public class SignInputBackend implements UserInputBackend<SignInputOptionsBuilder>, Listener {
+public class SignInputMethod implements UserInputMethod<SignInputOptionsBuilder>, Listener {
     private final JavaPlugin plugin;
     private final Map<Location, SignInputSession> sessionsByLocation = new ConcurrentHashMap<>();
     private final Map<UUID, SignInputSession> sessionsByPlayer = new ConcurrentHashMap<>();
 
-    public SignInputBackend(final JavaPlugin plugin) {
+    public SignInputMethod(final JavaPlugin plugin) {
         this.plugin = plugin;
     }
 

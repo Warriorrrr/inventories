@@ -7,7 +7,7 @@ import dev.warriorrr.inventories.gui.input.TextLengths;
 import dev.warriorrr.inventories.gui.input.response.Finish;
 import dev.warriorrr.inventories.gui.input.response.InputResponse;
 import dev.warriorrr.inventories.gui.input.PlayerInput;
-import dev.warriorrr.inventories.gui.input.UserInputBackend;
+import dev.warriorrr.inventories.gui.input.UserInputMethod;
 import dev.warriorrr.inventories.gui.input.response.Nothing;
 import dev.warriorrr.inventories.gui.input.response.OpenPreviousMenu;
 import dev.warriorrr.inventories.gui.input.response.ReOpen;
@@ -32,14 +32,14 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class ChatInputBackend implements UserInputBackend<ChatInputOptionsBuilder>, Listener {
+public class ChatInputMethod implements UserInputMethod<ChatInputOptionsBuilder>, Listener {
     private static final Duration INPUT_TIMEOUT = Duration.ofSeconds(60);
     private static final Collection<String> CANCEL_PHRASES = Set.of("q", "quit", "cancel", "stop");
 
     private final JavaPlugin plugin;
     private final Map<UUID, ChatInputSession> sessions = new ConcurrentHashMap<>();
 
-    public ChatInputBackend(JavaPlugin plugin) {
+    public ChatInputMethod(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 

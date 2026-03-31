@@ -11,15 +11,15 @@ import static org.mockito.Mockito.*;
 public class InputBackendRegistryTests {
     @Test
     void testBackendFor_returnsCorrectBackend_forGivenTextLength() {
-        final UserInputBackend longInput = mock(UserInputBackend.class);
+        final UserInputMethod<?> longInput = mock(UserInputMethod.class);
         when(longInput.maximumTextLength()).thenReturn(TextLength.ofAtLeast(100));
         when(longInput.toString()).thenReturn("long input");
 
-        final UserInputBackend shortInput = mock(UserInputBackend.class);
+        final UserInputMethod<?> shortInput = mock(UserInputMethod.class);
         when(shortInput.maximumTextLength()).thenReturn(TextLength.ofAtLeast(20));
         when(shortInput.toString()).thenReturn("short input");
 
-        final InputBackendRegistry registry = new InputBackendRegistry(Map.of(
+        final InputMethodRegistry registry = new InputMethodRegistry(Map.of(
                 Key.key("test", "short"), shortInput,
                 Key.key("test", "long"), longInput
         ));

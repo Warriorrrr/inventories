@@ -7,15 +7,13 @@ import dev.warriorrr.inventories.gui.MenuInventory;
 import dev.warriorrr.inventories.gui.MenuItem;
 import dev.warriorrr.inventories.gui.action.ClickAction;
 import dev.warriorrr.inventories.gui.input.BuiltinInputMethods;
-import dev.warriorrr.inventories.gui.input.TextLength;
-import dev.warriorrr.inventories.gui.input.impl.text.ChatInputBackend;
+import dev.warriorrr.inventories.gui.input.impl.text.ChatInputMethod;
 import dev.warriorrr.inventories.gui.input.impl.text.ChatInputOptionsBuilder;
 import dev.warriorrr.inventories.gui.input.response.InputResponse;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.block.BlockType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -62,7 +60,7 @@ public class InventoriesTestPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void on(StartAwaitingInputEvent event) {
-        if (event.getInputBackend() instanceof ChatInputBackend) {
+        if (event.getInputBackend() instanceof ChatInputMethod) {
             ((ChatInputOptionsBuilder) event.getOptionsBuilder()).addStartMessage(Component.text("Enter in chat:"));
         }
     }

@@ -2,7 +2,7 @@ package dev.warriorrr.inventories.event.input;
 
 import dev.warriorrr.inventories.gui.MenuInventory;
 import dev.warriorrr.inventories.gui.input.InputOptionsBuilder;
-import dev.warriorrr.inventories.gui.input.UserInputBackend;
+import dev.warriorrr.inventories.gui.input.UserInputMethod;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -18,11 +18,11 @@ public class StartAwaitingInputEvent extends Event {
     private final Player player;
     private final MenuInventory currentInventory;
 
-    private final UserInputBackend<?> inputBackend;
+    private final UserInputMethod<?> inputBackend;
     private final InputOptionsBuilder optionsBuilder;
 
     @ApiStatus.Internal
-    public StartAwaitingInputEvent(Player player, MenuInventory currentInventory, UserInputBackend<?> inputBackend, InputOptionsBuilder optionsBuilder) {
+    public StartAwaitingInputEvent(Player player, MenuInventory currentInventory, UserInputMethod<?> inputBackend, InputOptionsBuilder optionsBuilder) {
         this.player = player;
         this.currentInventory = currentInventory;
         this.inputBackend = inputBackend;
@@ -37,7 +37,7 @@ public class StartAwaitingInputEvent extends Event {
         return currentInventory;
     }
 
-    public UserInputBackend<?> getInputBackend() {
+    public UserInputMethod<?> getInputBackend() {
         return inputBackend;
     }
 
