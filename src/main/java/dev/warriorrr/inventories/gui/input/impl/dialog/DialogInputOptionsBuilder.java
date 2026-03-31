@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SequencedCollection;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class DialogInputOptionsBuilder implements InputOptionsBuilder {
     protected Component title = Component.empty();
@@ -35,6 +36,11 @@ public class DialogInputOptionsBuilder implements InputOptionsBuilder {
 
     public DialogInputOptionsBuilder dialog(final DialogLike dialog) {
         this.dialog = dialog;
+        return this;
+    }
+
+    public DialogInputOptionsBuilder dialog(final Supplier<DialogLike> dialog) {
+        this.dialog = dialog.get();
         return this;
     }
 
