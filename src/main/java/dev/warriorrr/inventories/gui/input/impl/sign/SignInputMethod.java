@@ -37,7 +37,6 @@ import java.util.function.Function;
 @SuppressWarnings("UnstableApiUsage")
 public class SignInputMethod implements UserInputMethod<SignInputOptionsBuilder>, Listener {
     private final JavaPlugin plugin;
-    private final Map<Location, SignInputSession> sessionsByLocation = new ConcurrentHashMap<>();
     private final Map<UUID, SignInputSession> sessionsByPlayer = new ConcurrentHashMap<>();
 
     public SignInputMethod(final JavaPlugin plugin) {
@@ -63,7 +62,6 @@ public class SignInputMethod implements UserInputMethod<SignInputOptionsBuilder>
         player.openVirtualSign(location, Side.FRONT);
 
         final SignInputSession session = new SignInputSession(location, originalData, options.inputFunction);
-        sessionsByLocation.put(location, session);
         sessionsByPlayer.put(player.getUniqueId(), session);
     }
 
@@ -81,7 +79,8 @@ public class SignInputMethod implements UserInputMethod<SignInputOptionsBuilder>
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onUncheckedSignChange(UncheckedSignChangeEvent event) {
-        final SignInputSession session = sessionsByLocation.get(event.getEditedBlockPosition().toLocation(event.getPlayer().getWorld()));
+        final Player player = event.getPlayer();
+        final SignInputSession session = sessionsByPlayer.get(player.getUniqueId());
         if (session == null) {
             return;
         }
@@ -90,8 +89,6 @@ public class SignInputMethod implements UserInputMethod<SignInputOptionsBuilder>
         if (event.getSide() != Side.FRONT) {
             return;
         }
-
-        final Player player = event.getPlayer();
 
         final String input = PlainTextComponentSerializer.plainText().serialize(event.lines().getFirst());
         final List<InputResponse> responses = session.inputFunction().apply(new PlayerInput(input));
@@ -120,7 +117,6 @@ public class SignInputMethod implements UserInputMethod<SignInputOptionsBuilder>
             cancel(player, true);
         }
 
-        sessionsByLocation.clear();
         sessionsByPlayer.clear();
     }
 
@@ -140,8 +136,6 @@ public class SignInputMethod implements UserInputMethod<SignInputOptionsBuilder>
         if (session == null) {
             return;
         }
-
-        sessionsByLocation.remove(session.signPosition());
 
         if (resend) {
             player.getScheduler().run(plugin, task -> player.sendBlockChange(session.signPosition(), session.originalBlockData()), null);
