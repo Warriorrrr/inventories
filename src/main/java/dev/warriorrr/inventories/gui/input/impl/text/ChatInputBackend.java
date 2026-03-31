@@ -31,9 +31,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
-public class ChatInputBackend implements UserInputBackend, Listener {
+public class ChatInputBackend implements UserInputBackend<ChatInputOptionsBuilder>, Listener {
     private static final Duration INPUT_TIMEOUT = Duration.ofSeconds(60);
     private static final Collection<String> CANCEL_PHRASES = Set.of("q", "quit", "cancel", "stop");
 
@@ -45,8 +44,8 @@ public class ChatInputBackend implements UserInputBackend, Listener {
     }
 
     @Override
-    public void startAwaitingInput(final Player player, final MenuInventory currentInventory, final Component title, final Function<PlayerInput, List<InputResponse>> inputFunction) {
-        final ChatInputSession session = new ChatInputSession(currentInventory, inputFunction);
+    public void startAwaitingInput(final Player player, final MenuInventory currentInventory, final ChatInputOptionsBuilder options) {
+        final ChatInputSession session = new ChatInputSession(currentInventory, options.inputFunction, options.onCancel);
         final UUID uuid = player.getUniqueId();
 
         cancelSession(uuid);
@@ -54,23 +53,28 @@ public class ChatInputBackend implements UserInputBackend, Listener {
 
         player.closeInventory();
 
-        //player.sendRichMessage(Translatable.of("townymenus:plugin-prefix").append(Translatable.of("chat-input-header")).forLocale(player));
-        player.sendMessage(title);
-        //player.sendRichMessage(Translatable.of("townymenus:plugin-prefix").append(Translatable.of("chat-input-timeout-warning", String.valueOf(INPUT_TIMEOUT.getSeconds()))).forLocale(player));
+        for (final Component message : options.startMessages) {
+            player.sendMessage(message);
+        }
 
         session.timeoutTask(plugin.getServer().getAsyncScheduler().runDelayed(plugin, task -> {
             cancelSession(uuid);
 
             final Player p = plugin.getServer().getPlayer(uuid);
             if (p != null) {
-                //p.sendRichMessage(Translatable.of("townymenus:plugin-prefix").append(Translatable.of("chat-input-timed-out")).forLocale(p));
+                options.onTimeout.accept(p);
             }
-        }, INPUT_TIMEOUT.getSeconds(), TimeUnit.SECONDS));
+        }, options.timeout.toMillis(), TimeUnit.MILLISECONDS));
     }
 
     @Override
     public TextLength maximumTextLength() {
         return TextLengths.LONG;
+    }
+
+    @Override
+    public ChatInputOptionsBuilder newOptionsBuilder() {
+        return new ChatInputOptionsBuilder();
     }
 
     @Override
@@ -99,7 +103,7 @@ public class ChatInputBackend implements UserInputBackend, Listener {
         final String plain = PlainTextComponentSerializer.plainText().serialize(event.originalMessage());
         if (CANCEL_PHRASES.contains(plain)) {
             cancelSession(player.getUniqueId());
-            //player.sendRichMessage(Translatable.of("townymenus:plugin-prefix").append(Translatable.of("chat-input-cancelled")).forLocale(player));
+            session.onCancel().accept(player);
             return;
         }
 

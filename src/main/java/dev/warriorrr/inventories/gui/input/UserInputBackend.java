@@ -1,20 +1,19 @@
 package dev.warriorrr.inventories.gui.input;
 
 import dev.warriorrr.inventories.gui.MenuInventory;
-import dev.warriorrr.inventories.gui.input.response.InputResponse;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 
-import java.util.List;
-import java.util.function.Function;
-
-public interface UserInputBackend {
-    void startAwaitingInput(final Player player, final MenuInventory currentInventory, final Component title, Function<PlayerInput, List<InputResponse>> inputFunction);
+public interface UserInputBackend<T extends InputOptionsBuilder> {
+    void startAwaitingInput(final Player player, final MenuInventory currentInventory, T options);
 
     /**
      * {@return the maximum supported text length for this input backend type}
      */
     TextLength maximumTextLength();
+
+    @ApiStatus.Internal
+    T newOptionsBuilder();
 
     default void disable() {}
 }

@@ -1,7 +1,8 @@
 package dev.warriorrr.inventories.gui.action;
 
+import dev.warriorrr.inventories.gui.input.InputMethodKey;
+import dev.warriorrr.inventories.gui.input.InputOptionsBuilder;
 import dev.warriorrr.inventories.gui.input.TextLength;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import dev.warriorrr.inventories.gui.MenuInventory;
@@ -12,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -73,15 +75,15 @@ public interface ClickAction {
         return new ClickTypeAction(type, rightClickAction);
     }
 
-    static UserInputAction userInput(Component title, Function<PlayerInput, InputResponse> inputFunction) {
-        return new UserInputAction(title, completion -> Collections.singletonList(inputFunction.apply(completion)));
+    static UserInputAction<?> userInput(Component title, Function<PlayerInput, InputResponse> inputFunction) {
+        return new UserInputAction<>(title, completion -> Collections.singletonList(inputFunction.apply(completion)));
     }
 
-    static UserInputAction userInput(final Component title, final TextLength textLength, final Function<PlayerInput, InputResponse> inputFunction) {
-        return new UserInputAction(title, completion -> Collections.singletonList(inputFunction.apply(completion)), null, textLength);
+    static UserInputAction<InputOptionsBuilder> userInput(final TextLength textLength, final Consumer<InputOptionsBuilder> builder) {
+        return new UserInputAction<>(textLength, builder);
     }
 
-    static UserInputAction userInput(final Component title, final Key inputBackendKey, final Function<PlayerInput, InputResponse> inputFunction) {
-        return new UserInputAction(title, completion -> Collections.singletonList(inputFunction.apply(completion)), inputBackendKey, null);
+    static <T extends InputOptionsBuilder> UserInputAction<T> userInput(final InputMethodKey<T> key, final Consumer<T> configurer) {
+        return new UserInputAction<>(key, configurer);
     }
 }

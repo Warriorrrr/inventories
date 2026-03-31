@@ -2,22 +2,32 @@ package dev.warriorrr.inventories.testplugin;
 
 import com.mojang.brigadier.Command;
 import dev.warriorrr.inventories.Inventories;
+import dev.warriorrr.inventories.event.input.StartAwaitingInputEvent;
 import dev.warriorrr.inventories.gui.MenuInventory;
 import dev.warriorrr.inventories.gui.MenuItem;
 import dev.warriorrr.inventories.gui.action.ClickAction;
+import dev.warriorrr.inventories.gui.input.BuiltinInputMethods;
 import dev.warriorrr.inventories.gui.input.TextLength;
+import dev.warriorrr.inventories.gui.input.impl.text.ChatInputBackend;
+import dev.warriorrr.inventories.gui.input.impl.text.ChatInputOptionsBuilder;
 import dev.warriorrr.inventories.gui.input.response.InputResponse;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.block.BlockType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class InventoriesTestPlugin extends JavaPlugin {
+import java.util.Collections;
+
+public class InventoriesTestPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         final Inventories instance = Inventories.forPlugin(this).build();
+        getServer().getPluginManager().registerEvents(this, this);
 
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             event.registrar().register(Commands.literal("open").executes(ctx -> {
@@ -25,10 +35,13 @@ public class InventoriesTestPlugin extends JavaPlugin {
                         .title(Component.text("hi"))
                         .rows(3)
                         .addItem(MenuItem.builder(Material.RED_WOOL)
-                                .action(ClickAction.userInput(Component.text("enter your text"), TextLength.ofAtLeast(15), input -> {
-                                    ctx.getSource().getSender().sendPlainMessage("You entered: " + input.getText());
-                                    return InputResponse.finish();
-                                })).build())
+                                .action(ClickAction.userInput(BuiltinInputMethods.CHAT, builder -> builder
+                                        .title(Component.text("Enter how much you wish to offer:"))
+                                        .onInput((input -> {
+                                            ctx.getSource().getSender().sendPlainMessage("You entered: " + input.getText());
+                                            return Collections.singletonList(InputResponse.finish());
+                                        }))
+                                )).build())
                         .addItem(MenuItem.builder(Material.ACACIA_BOAT)
                                 .name(Component.text("pagination with limited rows"))
                                 .slot(1)
@@ -45,5 +58,12 @@ public class InventoriesTestPlugin extends JavaPlugin {
                 return Command.SINGLE_SUCCESS;
             }).build());
         });
+    }
+
+    @EventHandler
+    public void on(StartAwaitingInputEvent event) {
+        if (event.getInputBackend() instanceof ChatInputBackend) {
+            ((ChatInputOptionsBuilder) event.getOptionsBuilder()).addStartMessage(Component.text("Enter in chat:"));
+        }
     }
 }

@@ -5,6 +5,8 @@ import dev.warriorrr.inventories.gui.MenuHistory;
 import dev.warriorrr.inventories.gui.MenuInventory;
 import dev.warriorrr.inventories.gui.input.BuiltinInputMethods;
 import dev.warriorrr.inventories.gui.input.InputBackendRegistry;
+import dev.warriorrr.inventories.gui.input.InputMethodKey;
+import dev.warriorrr.inventories.gui.input.InputOptionsBuilder;
 import dev.warriorrr.inventories.gui.input.UserInputBackend;
 import dev.warriorrr.inventories.gui.input.impl.sign.SignInputBackend;
 import dev.warriorrr.inventories.gui.input.impl.text.ChatInputBackend;
@@ -32,7 +34,7 @@ public class Inventories {
     private final List<Listener> listeners = new ArrayList<>();
     private final InputBackendRegistry inputBackendRegistry;
 
-    private Inventories(final JavaPlugin plugin, final Map<Key, UserInputBackend> inputBackends) {
+    private Inventories(final JavaPlugin plugin, final Map<Key, UserInputBackend<?>> inputBackends) {
         this.plugin = plugin;
         this.scheduler = new MenuScheduler(plugin);
         this.inputBackendRegistry = new InputBackendRegistry(inputBackends);
@@ -41,7 +43,7 @@ public class Inventories {
 
         listeners.addAll(List.of(new PlayerListener(), new InventoryListener(), new ShutdownListener(this)));
 
-        for (final UserInputBackend backend : inputBackends.values()) {
+        for (final UserInputBackend<?> backend : inputBackends.values()) {
             if (backend instanceof Listener listener) {
                 listeners.add(listener);
             }
@@ -87,7 +89,7 @@ public class Inventories {
 
     public static class Builder {
         private final JavaPlugin plugin;
-        private final Map<Key, UserInputBackend> inputBackends = new LinkedHashMap<>();
+        private final Map<Key, UserInputBackend<?>> inputBackends = new LinkedHashMap<>();
 
         protected Builder(final JavaPlugin plugin) {
             this.plugin = plugin;
@@ -96,8 +98,8 @@ public class Inventories {
             addInputBackend(BuiltinInputMethods.CHAT, new ChatInputBackend(plugin));
         }
 
-        public Builder addInputBackend(final Key key, final UserInputBackend backend) {
-            this.inputBackends.put(key, backend);
+        public <T extends InputOptionsBuilder> Builder addInputBackend(final InputMethodKey<T> key, final UserInputBackend<T> backend) {
+            this.inputBackends.put(key.key(), backend);
             return this;
         }
 

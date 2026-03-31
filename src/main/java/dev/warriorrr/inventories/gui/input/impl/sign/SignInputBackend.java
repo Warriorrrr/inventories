@@ -16,7 +16,6 @@ import io.papermc.paper.event.packet.UncheckedSignChangeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Location;
-import org.bukkit.block.BlockType;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.sign.Side;
@@ -30,12 +29,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 @SuppressWarnings("UnstableApiUsage")
-public class SignInputBackend implements UserInputBackend, Listener {
+public class SignInputBackend implements UserInputBackend<SignInputOptionsBuilder>, Listener {
     private final JavaPlugin plugin;
     private final Map<Location, SignInputSession> sessionsByLocation = new ConcurrentHashMap<>();
     private final Map<UUID, SignInputSession> sessionsByPlayer = new ConcurrentHashMap<>();
@@ -45,15 +45,16 @@ public class SignInputBackend implements UserInputBackend, Listener {
     }
 
     @Override
-    public void startAwaitingInput(Player player, MenuInventory currentInventory, Component title, Function<PlayerInput, List<InputResponse>> inputFunction) {
+    public void startAwaitingInput(Player player, MenuInventory currentInventory, SignInputOptionsBuilder options) {
         final Location location = player.getLocation().add(player.getLocation().getDirection().multiply(-3)).getBlock().getLocation(); // this places the sign somewhere behind the player
 
         final BlockData originalData = location.getBlock().getBlockData();
-        final BlockData signBlockData = BlockType.OAK_SIGN.createBlockData();
+        final BlockData signBlockData = options.signType.createBlockData();
 
         final Sign sign = (Sign) signBlockData.createBlockState();
-        sign.getSide(Side.FRONT).line(1, Component.text("^^^^^^^^^^^"));
-        sign.getSide(Side.FRONT).line(2, title);
+        for (int i = 0; i < options.lines.size(); i++) {
+            sign.getSide(Side.FRONT).line(i, Objects.requireNonNullElse(options.lines.get(i), Component.empty()));
+        }
 
         player.closeInventory();
 
@@ -61,7 +62,7 @@ public class SignInputBackend implements UserInputBackend, Listener {
         player.sendBlockUpdate(location, sign);
         player.openVirtualSign(location, Side.FRONT);
 
-        final SignInputSession session = new SignInputSession(location, originalData, inputFunction);
+        final SignInputSession session = new SignInputSession(location, originalData, options.inputFunction);
         sessionsByLocation.put(location, session);
         sessionsByPlayer.put(player.getUniqueId(), session);
     }
@@ -71,6 +72,11 @@ public class SignInputBackend implements UserInputBackend, Listener {
         // the maximum length for a sign is a bit complicated since it's dependent on the font and characters being used except for a hard limit of 50
         // the limit when using characters in the English alphabet is 15, so that'll be used here
         return TextLengths.SHORT;
+    }
+
+    @Override
+    public SignInputOptionsBuilder newOptionsBuilder() {
+        return new SignInputOptionsBuilder();
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
