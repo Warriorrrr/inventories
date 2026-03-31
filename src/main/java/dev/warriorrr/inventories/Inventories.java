@@ -8,6 +8,7 @@ import dev.warriorrr.inventories.gui.input.InputMethodRegistry;
 import dev.warriorrr.inventories.gui.input.InputMethodKey;
 import dev.warriorrr.inventories.gui.input.InputOptionsBuilder;
 import dev.warriorrr.inventories.gui.input.UserInputMethod;
+import dev.warriorrr.inventories.gui.input.impl.dialog.DialogInputMethod;
 import dev.warriorrr.inventories.gui.input.impl.sign.SignInputMethod;
 import dev.warriorrr.inventories.gui.input.impl.text.ChatInputMethod;
 import dev.warriorrr.inventories.listeners.InventoryListener;
@@ -94,6 +95,7 @@ public class Inventories {
         protected Builder(final JavaPlugin plugin) {
             this.plugin = plugin;
 
+            addInputMethod(BuiltinInputMethods.DIALOG, new DialogInputMethod());
             addInputMethod(BuiltinInputMethods.SIGN, new SignInputMethod(plugin));
             addInputMethod(BuiltinInputMethods.CHAT, new ChatInputMethod(plugin));
         }
