@@ -44,22 +44,22 @@ public class UserInputAction<T extends InputOptionsBuilder> implements ClickActi
 
     @Override
     public void onClick(MenuInventory inventory, InventoryClickEvent event) {
-        final InputMethodRegistry registry = Inventories.getInstance().inputBackendRegistry();
+        final InputMethodRegistry registry = Inventories.getInstance().inputMethodRegistry();
 
-        final UserInputMethod<T> backend;
+        final UserInputMethod<T> method;
         if (this.key != null) {
-            backend = Objects.requireNonNull(registry.backend(this.key.key()), () -> "could not find input backend for key '" + this.key.key().asString() + "'");
+            method = Objects.requireNonNull(registry.method(this.key.key()), () -> "could not find input method for key '" + this.key.key().asString() + "'");
         } else {
-            backend = registry.backendFor(Objects.requireNonNullElse(this.desiredSupportedTextLength, TextLengths.SHORT));
+            method = registry.methodFor(Objects.requireNonNullElse(this.desiredSupportedTextLength, TextLengths.SHORT));
         }
 
-        final T builder = backend.newOptionsBuilder();
+        final T builder = method.newOptionsBuilder();
         this.configurer.accept(builder);
 
         final Player player = (Player) event.getWhoClicked();
 
-        new StartAwaitingInputEvent(player, inventory, backend, builder).callEvent();
+        new StartAwaitingInputEvent(player, inventory, method, builder).callEvent();
 
-        backend.startAwaitingInput(player, inventory, builder);
+        method.startAwaitingInput(player, inventory, builder);
     }
 }

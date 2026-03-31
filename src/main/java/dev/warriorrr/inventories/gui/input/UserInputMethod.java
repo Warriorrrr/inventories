@@ -8,7 +8,7 @@ public interface UserInputMethod<T extends InputOptionsBuilder> {
     void startAwaitingInput(final Player player, final MenuInventory currentInventory, T options);
 
     /**
-     * {@return the maximum supported text length for this input backend type}
+     * {@return the maximum supported text length for this input method type}
      */
     TextLength maximumTextLength();
 

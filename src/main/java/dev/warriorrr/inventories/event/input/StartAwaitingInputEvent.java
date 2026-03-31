@@ -18,14 +18,14 @@ public class StartAwaitingInputEvent extends Event {
     private final Player player;
     private final MenuInventory currentInventory;
 
-    private final UserInputMethod<?> inputBackend;
+    private final UserInputMethod<?> inputMethod;
     private final InputOptionsBuilder optionsBuilder;
 
     @ApiStatus.Internal
-    public StartAwaitingInputEvent(Player player, MenuInventory currentInventory, UserInputMethod<?> inputBackend, InputOptionsBuilder optionsBuilder) {
+    public StartAwaitingInputEvent(Player player, MenuInventory currentInventory, UserInputMethod<?> inputMethod, InputOptionsBuilder optionsBuilder) {
         this.player = player;
         this.currentInventory = currentInventory;
-        this.inputBackend = inputBackend;
+        this.inputMethod = inputMethod;
         this.optionsBuilder = optionsBuilder;
     }
 
@@ -37,8 +37,8 @@ public class StartAwaitingInputEvent extends Event {
         return currentInventory;
     }
 
-    public UserInputMethod<?> getInputBackend() {
-        return inputBackend;
+    public UserInputMethod<?> getInputMethod() {
+        return inputMethod;
     }
 
     public InputOptionsBuilder getOptionsBuilder() {

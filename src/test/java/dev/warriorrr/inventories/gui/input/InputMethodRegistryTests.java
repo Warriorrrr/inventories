@@ -8,9 +8,9 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class InputBackendRegistryTests {
+public class InputMethodRegistryTests {
     @Test
-    void testBackendFor_returnsCorrectBackend_forGivenTextLength() {
+    void testMethodFor_returnsCorrectMethod_forGivenTextLength() {
         final UserInputMethod<?> longInput = mock(UserInputMethod.class);
         when(longInput.maximumTextLength()).thenReturn(TextLength.ofAtLeast(100));
         when(longInput.toString()).thenReturn("long input");
@@ -24,9 +24,9 @@ public class InputBackendRegistryTests {
                 Key.key("test", "long"), longInput
         ));
 
-        assertEquals(shortInput, registry.backendFor(TextLength.ofAtLeast(10)));
-        assertEquals(shortInput, registry.backendFor(TextLength.ofAtLeast(20)));
+        assertEquals(shortInput, registry.methodFor(TextLength.ofAtLeast(10)));
+        assertEquals(shortInput, registry.methodFor(TextLength.ofAtLeast(20)));
 
-        assertEquals(longInput, registry.backendFor(TextLength.ofAtLeast(40)));
+        assertEquals(longInput, registry.methodFor(TextLength.ofAtLeast(40)));
     }
 }

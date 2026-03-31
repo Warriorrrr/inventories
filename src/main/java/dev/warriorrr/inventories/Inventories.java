@@ -32,19 +32,19 @@ public class Inventories {
     private final JavaPlugin plugin;
     private final MenuScheduler scheduler;
     private final List<Listener> listeners = new ArrayList<>();
-    private final InputMethodRegistry inputBackendRegistry;
+    private final InputMethodRegistry inputMethodRegistry;
 
-    private Inventories(final JavaPlugin plugin, final Map<Key, UserInputMethod<?>> inputBackends) {
+    private Inventories(final JavaPlugin plugin, final Map<Key, UserInputMethod<?>> inputMethods) {
         this.plugin = plugin;
         this.scheduler = new MenuScheduler(plugin);
-        this.inputBackendRegistry = new InputMethodRegistry(inputBackends);
+        this.inputMethodRegistry = new InputMethodRegistry(inputMethods);
 
         INSTANCE = this;
 
         listeners.addAll(List.of(new PlayerListener(), new InventoryListener(), new ShutdownListener(this)));
 
-        for (final UserInputMethod<?> backend : inputBackends.values()) {
-            if (backend instanceof Listener listener) {
+        for (final UserInputMethod<?> method : inputMethods.values()) {
+            if (method instanceof Listener listener) {
                 listeners.add(listener);
             }
         }
@@ -63,11 +63,11 @@ public class Inventories {
         listeners.clear();
 
         MenuHistory.clearAllHistory();
-        this.inputBackendRegistry.shutdown();
+        this.inputMethodRegistry.shutdown();
     }
 
-    public InputMethodRegistry inputBackendRegistry() {
-        return this.inputBackendRegistry;
+    public InputMethodRegistry inputMethodRegistry() {
+        return this.inputMethodRegistry;
     }
 
     public MenuScheduler getScheduler() {
@@ -89,40 +89,40 @@ public class Inventories {
 
     public static class Builder {
         private final JavaPlugin plugin;
-        private final Map<Key, UserInputMethod<?>> inputBackends = new LinkedHashMap<>();
+        private final Map<Key, UserInputMethod<?>> inputMethods = new LinkedHashMap<>();
 
         protected Builder(final JavaPlugin plugin) {
             this.plugin = plugin;
 
-            addInputBackend(BuiltinInputMethods.SIGN, new SignInputMethod(plugin));
-            addInputBackend(BuiltinInputMethods.CHAT, new ChatInputMethod(plugin));
+            addInputMethod(BuiltinInputMethods.SIGN, new SignInputMethod(plugin));
+            addInputMethod(BuiltinInputMethods.CHAT, new ChatInputMethod(plugin));
         }
 
-        public <T extends InputOptionsBuilder> Builder addInputBackend(final InputMethodKey<T> key, final UserInputMethod<T> backend) {
-            this.inputBackends.put(key.key(), backend);
+        public <T extends InputOptionsBuilder> Builder addInputMethod(final InputMethodKey<T> key, final UserInputMethod<T> method) {
+            this.inputMethods.put(key.key(), method);
             return this;
         }
 
         /**
-         * Removes the previously registered input backend with the given key. By default, there are already builtin input backends that can be removed by this method.
+         * Removes the previously registered input method with the given key. By default, there are already builtin input methods that can be removed by this method.
          *
-         * @param key The key for the backend to remove.
+         * @param key The key for the method to remove.
          * @return {@code this}
          * @see BuiltinInputMethods#keys()
          */
-        public Builder removeInputBackend(final Key key) {
-            this.inputBackends.remove(key);
+        public Builder removeInputMethod(final Key key) {
+            this.inputMethods.remove(key);
             return this;
         }
 
         /**
          * {@return a new Inventories instance based on the provided options}
-         * @throws IllegalStateException if no input backends are registered.
+         * @throws IllegalStateException if no input methods are registered.
          */
         public Inventories build() {
-            Preconditions.checkState(!this.inputBackends.isEmpty(), "at least 1 input backend is required!");
+            Preconditions.checkState(!this.inputMethods.isEmpty(), "at least 1 input method is required!");
 
-            return new Inventories(this.plugin, this.inputBackends);
+            return new Inventories(this.plugin, this.inputMethods);
         }
     }
 }

@@ -60,7 +60,7 @@ public class InventoriesTestPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void on(StartAwaitingInputEvent event) {
-        if (event.getInputBackend() instanceof ChatInputMethod) {
+        if (event.getInputMethod() instanceof ChatInputMethod) {
             ((ChatInputOptionsBuilder) event.getOptionsBuilder()).addStartMessage(Component.text("Enter in chat:"));
         }
     }

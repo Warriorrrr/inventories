@@ -12,43 +12,43 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unchecked")
 public class InputMethodRegistry {
-    private final Map<Key, UserInputMethod<?>> backends;
-    private final TreeMap<TextLength, UserInputMethod<?>> backendByLength = new TreeMap<>();
+    private final Map<Key, UserInputMethod<?>> methods;
+    private final TreeMap<TextLength, UserInputMethod<?>> methodsByLength = new TreeMap<>();
 
     @ApiStatus.Internal
-    public InputMethodRegistry(final Map<Key, UserInputMethod<?>> backends) {
-        Preconditions.checkState(!backends.isEmpty(), "backends may not be empty"); // Already checked in the Inventories builder as well
+    public InputMethodRegistry(final Map<Key, UserInputMethod<?>> methods) {
+        Preconditions.checkState(!methods.isEmpty(), "methods may not be empty"); // Already checked in the Inventories builder as well
 
-        this.backends = Collections.unmodifiableMap(new ConcurrentHashMap<>(backends));
+        this.methods = Collections.unmodifiableMap(new ConcurrentHashMap<>(methods));
 
-        for (final UserInputMethod<?> backend : backends.values()) {
-            this.backendByLength.putIfAbsent(backend.maximumTextLength(), backend); // If a second backend uses the same text length, it's currently out of luck when using TextLength
+        for (final UserInputMethod<?> method : methods.values()) {
+            this.methodsByLength.putIfAbsent(method.maximumTextLength(), method); // If a second method uses the same text length, it's currently out of luck when using TextLength
         }
     }
 
     @ApiStatus.Internal
     public void shutdown() {
-        for (final UserInputMethod<?> backend : backends.values()) {
-            backend.disable();
+        for (final UserInputMethod<?> method : methods.values()) {
+            method.disable();
         }
     }
 
     @Nullable
-    public <T extends InputOptionsBuilder> UserInputMethod<T> backend(final Key key) {
-        return (UserInputMethod<T>) this.backends.get(key);
+    public <T extends InputOptionsBuilder> UserInputMethod<T> method(final Key key) {
+        return (UserInputMethod<T>) this.methods.get(key);
     }
 
-    public <T extends InputOptionsBuilder> UserInputMethod<T> backend(final InputMethodKey<T> key) {
-        return (UserInputMethod<T>) this.backends.get(key.key());
+    public <T extends InputOptionsBuilder> UserInputMethod<T> method(final InputMethodKey<T> key) {
+        return (UserInputMethod<T>) this.methods.get(key.key());
     }
 
-    public <T extends InputOptionsBuilder> UserInputMethod<T> backendFor(final TextLength textLength) {
-        final Map.Entry<TextLength, UserInputMethod<?>> ceil = this.backendByLength.ceilingEntry(textLength);
+    public <T extends InputOptionsBuilder> UserInputMethod<T> methodFor(final TextLength textLength) {
+        final Map.Entry<TextLength, UserInputMethod<?>> ceil = this.methodsByLength.ceilingEntry(textLength);
         if (ceil != null) {
             return (UserInputMethod<T>) ceil.getValue();
         }
 
-        // can't find a backend that can fit the minimum length, so just try the backend with the highest supported length
-        return (UserInputMethod<T>) this.backendByLength.lastEntry().getValue();
+        // can't find a method that can fit the minimum length, so just try the method with the highest supported length
+        return (UserInputMethod<T>) this.methodsByLength.lastEntry().getValue();
     }
 }
