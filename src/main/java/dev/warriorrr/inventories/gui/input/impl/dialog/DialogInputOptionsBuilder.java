@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SequencedCollection;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -19,7 +20,8 @@ public class DialogInputOptionsBuilder implements InputOptionsBuilder {
     protected Function<PlayerInput, List<InputResponse>> inputFunction;
     protected DialogLike dialog;
     protected Map<Key, Function<DialogResponse, SequencedCollection<InputResponse>>> clickHandlers = new HashMap<>();
-    protected String initialValue;
+
+    protected Consumer<DefaultDialogOptions> defaultDialogOptionsModifier;
 
     protected DialogInputOptionsBuilder() {}
 
@@ -45,14 +47,8 @@ public class DialogInputOptionsBuilder implements InputOptionsBuilder {
         return this;
     }
 
-    /**
-     * Sets the initial value when the default dialog is being used.
-     *
-     * @param initialValue The initial text value.
-     * @return {@code this} for chaining
-     */
-    public DialogInputOptionsBuilder initialValue(final String initialValue) {
-        this.initialValue = initialValue;
+    public DialogInputOptionsBuilder modifyDefaultDialog(final Consumer<DefaultDialogOptions> defaultDialogOptions) {
+        this.defaultDialogOptionsModifier = defaultDialogOptions;
         return this;
     }
 

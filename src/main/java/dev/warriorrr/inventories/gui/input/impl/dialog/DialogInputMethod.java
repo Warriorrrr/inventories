@@ -19,6 +19,7 @@ import io.papermc.paper.registry.data.dialog.ActionButton;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
+import io.papermc.paper.registry.data.dialog.input.TextDialogInput;
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.dialog.DialogLike;
 import net.kyori.adventure.key.Key;
@@ -45,11 +46,17 @@ public class DialogInputMethod implements UserInputMethod<DialogInputOptionsBuil
         if (dialog == null) {
             final Key confirmKey = Key.key("inventories:user_input/confirm");
 
+            final DefaultDialogOptions defaultOptions = new DefaultDialogOptions();
+            if (options.defaultDialogOptionsModifier != null) {
+                options.defaultDialogOptionsModifier.accept(defaultOptions);
+            }
+
+            TextDialogInput.Builder inputBox = DialogInput.text("input", defaultOptions.label).maxLength(defaultOptions.maxLength);
+            defaultOptions.inputConsumer.accept(inputBox);
+
             dialog = Dialog.create(builder -> builder.empty()
                     .base(DialogBase.builder(options.title)
-                            .inputs(List.of(
-                                    DialogInput.text("input", Component.text("Input")).initial(options.initialValue).maxLength(1024).build()
-                            )).build())
+                            .inputs(List.of(inputBox.build())).build())
                     .type(DialogType.confirmation(
                             // thank you paper docs
                             ActionButton.create(
