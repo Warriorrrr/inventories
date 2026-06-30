@@ -48,7 +48,7 @@ public class DialogInputMethod implements UserInputMethod<DialogInputOptionsBuil
             dialog = Dialog.create(builder -> builder.empty()
                     .base(DialogBase.builder(options.title)
                             .inputs(List.of(
-                                    DialogInput.text("input", Component.text("Input")).maxLength(1024).build()
+                                    DialogInput.text("input", Component.text("Input")).initial(options.initialValue).maxLength(1024).build()
                             )).build())
                     .type(DialogType.confirmation(
                             // thank you paper docs

@@ -19,6 +19,7 @@ public class DialogInputOptionsBuilder implements InputOptionsBuilder {
     protected Function<PlayerInput, List<InputResponse>> inputFunction;
     protected DialogLike dialog;
     protected Map<Key, Function<DialogResponse, SequencedCollection<InputResponse>>> clickHandlers = new HashMap<>();
+    protected String initialValue;
 
     protected DialogInputOptionsBuilder() {}
 
@@ -41,6 +42,17 @@ public class DialogInputOptionsBuilder implements InputOptionsBuilder {
 
     public DialogInputOptionsBuilder dialog(final Supplier<DialogLike> dialog) {
         this.dialog = dialog.get();
+        return this;
+    }
+
+    /**
+     * Sets the initial value when the default dialog is being used.
+     *
+     * @param initialValue The initial text value.
+     * @return {@code this} for chaining
+     */
+    public DialogInputOptionsBuilder initialValue(final String initialValue) {
+        this.initialValue = initialValue;
         return this;
     }
 
