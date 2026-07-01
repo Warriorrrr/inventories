@@ -10,6 +10,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -23,6 +24,11 @@ public class InventoryListener implements Listener {
             return;
 
         event.setCancelled(true);
+
+        final Inventory clicked = event.getClickedInventory();
+        if (clicked == null || !(clicked.getHolder(false) instanceof MenuInventory)) {
+            return;
+        }
 
         List<ClickAction> actions = menu.actions(event.getSlot());
         if (actions != null)
