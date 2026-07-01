@@ -20,14 +20,17 @@ public class MenuScheduler {
     }
 
     public synchronized void scheduleAsync(UUID uuid, Runnable runnable) {
-        // Prevent unwanted behaviour by only allowing 1 async task per player at a time
-        if (!runningTasks.add(uuid)) {
+        // Prevent unwanted behavior by only allowing 1 async task per player at a time
+        if (!runningTasks.add(uuid) || !plugin.isEnabled()) {
             return;
         }
 
         plugin.getServer().getAsyncScheduler().runNow(plugin, task -> {
-            runnable.run();
-            runningTasks.remove(uuid);
+            try {
+                runnable.run();
+            } finally {
+                runningTasks.remove(uuid);
+            }
         });
     }
 }

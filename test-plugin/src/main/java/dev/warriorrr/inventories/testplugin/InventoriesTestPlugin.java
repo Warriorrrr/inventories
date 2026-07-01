@@ -85,7 +85,7 @@ public class InventoriesTestPlugin extends JavaPlugin implements Listener {
                                     return builder.build();
                                 }))
                                 .build())
-                        .build().open((Player) ctx.getSource().getSender());
+                        .build().openAsRoot((Player) ctx.getSource().getSender());
                 return Command.SINGLE_SUCCESS;
             }).build());
         });

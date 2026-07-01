@@ -1,6 +1,7 @@
 package dev.warriorrr.inventories.gui.action;
 
 import dev.warriorrr.inventories.Inventories;
+import dev.warriorrr.inventories.gui.MenuHistory;
 import dev.warriorrr.inventories.gui.MenuInventory;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,8 @@ public class OpenInventoryAction implements ClickAction {
             if (silent) {
                 built.openSilent(event.getWhoClicked());
             } else {
-                built.open(event.getWhoClicked());
+                MenuHistory.addHistory(event.getWhoClicked().getUniqueId(), supplier);
+                built.openSilent(event.getWhoClicked());
             }
         });
     }

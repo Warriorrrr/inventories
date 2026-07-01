@@ -15,6 +15,7 @@ import dev.warriorrr.inventories.gui.slot.anchor.VerticalAnchor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -81,11 +82,43 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
             clickActions.put(slot, item.actions());
     }
 
+    /**
+     * Opens this inventory for a player, and adds this current inventory to the history tracker.
+     *
+     * @param player The player to open this inventory for.
+     */
     public void open(@NotNull HumanEntity player) {
         this.openSilent(player);
         MenuHistory.addHistory(player.getUniqueId(), this);
     }
 
+    /**
+     * Opens this menu as a "root", meaning that all previous menu history is properly cleared.
+     *
+     * @param player The player to open this inventory for.
+     */
+    public void openAsRoot(final @NotNull Player player) {
+        openAsRoot(player, () -> this);
+    }
+
+    /**
+     * Opens this menu as a "root", meaning that all previous menu history is properly cleared.
+     *
+     * @param player The player to open this inventory for.
+     * @param toRecreate A supplier that returns an up-to-date copy of this menu if necessary, i.e. for dynamic content, for better back button support.
+     */
+    public void openAsRoot(final @NotNull Player player, final @NotNull Supplier<MenuInventory> toRecreate) {
+        MenuHistory.clearHistory(player.getUniqueId());
+        MenuHistory.addHistory(player.getUniqueId(), toRecreate);
+
+        this.openSilent(player);
+    }
+
+    /**
+     * Opens this inventory for a player, without recording it within the history tracker.
+     *
+     * @param player The player to open this inventory for.
+     */
     public void openSilent(@NotNull HumanEntity player) {
         final JavaPlugin plugin = Inventories.getInstance().getPlugin();
 
