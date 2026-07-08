@@ -12,8 +12,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 
@@ -41,29 +39,24 @@ public class InventoryListener implements Listener {
             return;
 
         for (ItemStack item : event.getView().getBottomInventory()) {
-            if (item == null)
-                continue;
-
-            final ItemMeta meta = item.getItemMeta();
-            if (meta == null)
-                continue;
-
-            if (meta.getPersistentDataContainer().has(MenuItem.PDC_KEY, PersistentDataType.BYTE))
+            if (item != null && item.getPersistentDataContainer().has(MenuItem.PDC_KEY)) {
                 item.setAmount(0);
+            }
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onItemDrop(final PlayerDropItemEvent event) {
-        final ItemMeta meta = event.getItemDrop().getItemStack().getItemMeta();
+        final ItemStack itemStack = event.getItemDrop().getItemStack();
 
-        if (meta != null && meta.getPersistentDataContainer().has(MenuItem.PDC_KEY, PersistentDataType.BYTE))
+        if (itemStack.getPersistentDataContainer().has(MenuItem.PDC_KEY)) {
             event.getItemDrop().remove();
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onInventoryDrag(final InventoryDragEvent event) {
-        if (!(event.getInventory().getHolder(false) instanceof MenuInventory menu))
+        if (!(event.getInventory().getHolder(false) instanceof MenuInventory))
             return;
 
         event.setCancelled(true);
