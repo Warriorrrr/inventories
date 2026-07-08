@@ -10,4 +10,8 @@ public interface InputOptionsBuilder {
     InputOptionsBuilder title(final Component title);
 
     InputOptionsBuilder onInput(final Function<PlayerInput, List<InputResponse>> inputFunction);
+
+    default InputOptionsBuilder input(final Function<PlayerInput, InputResponse> inputFunction) {
+        return onInput(input -> List.of(inputFunction.apply(input)));
+    }
 }
