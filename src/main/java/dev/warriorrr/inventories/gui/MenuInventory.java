@@ -166,6 +166,20 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
             return this;
         }
 
+        public Builder addItems(@NotNull MenuItem @NotNull... items) {
+            for (final MenuItem item : items) {
+                addItem(item);
+            }
+            return this;
+        }
+
+        public Builder addItems(@NotNull Iterable<@NotNull MenuItem> items) {
+            for (final MenuItem item : items) {
+                addItem(item);
+            }
+            return this;
+        }
+
         public Builder size(int size) {
             this.size = MenuHelper.normalizeSize(size);
             return this;
