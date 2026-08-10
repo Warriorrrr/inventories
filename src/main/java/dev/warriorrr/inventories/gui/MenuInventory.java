@@ -2,6 +2,8 @@ package dev.warriorrr.inventories.gui;
 
 import com.google.common.base.Preconditions;
 import dev.warriorrr.inventories.Inventories;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -34,7 +36,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supplier<MenuInventory> {
-    private static final ItemStack BACKGROUND_GLASS = MenuItem.builder(Material.GRAY_STAINED_GLASS_PANE).name(Component.empty()).build().itemStack();
+    private static final ItemStack BACKGROUND_GLASS = MenuItem.builder(Material.GRAY_STAINED_GLASS_PANE).name(Component.empty()).mutateItem(item -> item.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build())).build().itemStack();
     private final Inventory inventory;
     private final int size;
     private final Map<Integer, List<ClickAction>> clickActions = new HashMap<>();
