@@ -3,6 +3,7 @@ package dev.warriorrr.inventories;
 import com.google.common.base.Preconditions;
 import dev.warriorrr.inventories.gui.MenuHistory;
 import dev.warriorrr.inventories.gui.MenuInventory;
+import dev.warriorrr.inventories.gui.MenuItem;
 import dev.warriorrr.inventories.gui.input.BuiltinInputMethods;
 import dev.warriorrr.inventories.gui.input.InputMethodRegistry;
 import dev.warriorrr.inventories.gui.input.InputMethodKey;
@@ -19,6 +20,7 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -67,14 +69,29 @@ public class Inventories {
         this.inputMethodRegistry.shutdown();
     }
 
+    public MenuItem.Builder itemBuilder(final ItemType type) {
+        return MenuItem.builder(type);
+    }
+
+    public MenuInventory.Builder menuBuilder() {
+        return MenuInventory.builder();
+    }
+
+    public MenuInventory.PaginatorBuilder paginatorMenuBuilder() {
+        return MenuInventory.paginator();
+    }
+
+    @ApiStatus.Internal
     public InputMethodRegistry inputMethodRegistry() {
         return this.inputMethodRegistry;
     }
 
+    @ApiStatus.Internal
     public MenuScheduler getScheduler() {
         return scheduler;
     }
 
+    @ApiStatus.Internal
     public JavaPlugin getPlugin() {
         return plugin;
     }
@@ -122,7 +139,7 @@ public class Inventories {
          * @throws IllegalStateException if no input methods are registered.
          */
         public Inventories build() {
-            Preconditions.checkState(!this.inputMethods.isEmpty(), "at least 1 input method is required!");
+            Preconditions.checkState(!this.inputMethods.isEmpty(), "at least 1 input method is required");
 
             return new Inventories(this.plugin, this.inputMethods);
         }
