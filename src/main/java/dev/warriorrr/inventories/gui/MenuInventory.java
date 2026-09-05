@@ -9,7 +9,6 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import dev.warriorrr.inventories.gui.action.ClickAction;
 import dev.warriorrr.inventories.gui.slot.anchor.HorizontalAnchor;
 import dev.warriorrr.inventories.gui.slot.anchor.SlotAnchor;
@@ -40,6 +39,8 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
     private final Inventory inventory;
     private final int size;
     private final Map<Integer, List<ClickAction>> clickActions = new HashMap<>();
+
+    private Component titleOverride = null;
 
     public MenuInventory(@NotNull Inventory inventory, @NotNull Component title) {
         this.inventory = Bukkit.createInventory(this, inventory.getSize(), title);
@@ -142,6 +143,24 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
         return this.size;
     }
 
+    /**
+     * {@return the title override to be used the next time this inventory is opened}
+     * @since 1.1.4
+     */
+    public @Nullable Component titleOverride() {
+        return this.titleOverride;
+    }
+
+    /**
+     * Sets the title override to use the next time this inventory is opened.
+     *
+     * @param titleOverride The title override to set
+     * @since 1.1.4
+     */
+    public void titleOverride(final @Nullable Component titleOverride) {
+        this.titleOverride = titleOverride;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -220,20 +239,22 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
         }
 
         public MenuInventory build() {
-            Inventory inventory = Bukkit.createInventory(null, size, Component.text(PlainTextComponentSerializer.plainText().serialize(title)));
+            Inventory inventory = Bukkit.createInventory(null, size, title);
 
             Map<Integer, List<ClickAction>> actions = new HashMap<>();
 
             for (MenuItem item : this.items) {
                 int slot = item.slot().resolve(this.size);
 
-                if (slot > this.size - 1 || inventory.getItem(slot) != null)
+                if (slot > this.size - 1 || inventory.getItem(slot) != null) {
                     continue;
+                }
 
                 inventory.setItem(slot, item.itemStack());
 
-                if (!item.actions().isEmpty())
+                if (!item.actions().isEmpty()) {
                     actions.put(slot, item.actions());
+                }
             }
 
             MenuInventory menuInventory = new MenuInventory(inventory, title);
