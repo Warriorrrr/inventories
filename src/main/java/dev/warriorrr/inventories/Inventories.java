@@ -17,6 +17,7 @@ import dev.warriorrr.inventories.listeners.PlayerListener;
 import dev.warriorrr.inventories.listeners.ShutdownListener;
 import dev.warriorrr.inventories.utils.MenuScheduler;
 import net.kyori.adventure.key.Key;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -56,9 +57,15 @@ public class Inventories {
     }
 
     public void disable() {
-        for (final Player player : plugin.getServer().getOnlinePlayers()) {
+        final Server server = plugin.getServer();
+
+        for (final Player player : List.copyOf(server.getOnlinePlayers())) {
             if (player.getOpenInventory().getTopInventory().getHolder(false) instanceof MenuInventory) {
-                player.closeInventory();
+                if (server.isOwnedByCurrentRegion(player)) {
+                    player.closeInventory();
+                } else if (!server.isStopping() && plugin.isEnabled()) {
+                    player.getScheduler().execute(plugin, player::closeInventory, null, 1L);
+                }
             }
         }
 
