@@ -1,5 +1,6 @@
 package dev.warriorrr.inventories.gui;
 
+import com.google.common.base.Preconditions;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import io.papermc.paper.datacomponent.item.ResolvableProfile;
@@ -11,7 +12,9 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -64,7 +67,15 @@ public class MenuItem {
         this.actions.addAll(actions);
     }
 
+    @ApiStatus.Obsolete(since = "1.1.4")
     public static Builder builder(@NotNull Material type) {
+        final ItemType itemType = type.asItemType();
+        Preconditions.checkArgument(itemType != null, "%s isn't an item", type.name());
+
+        return new Builder(itemType);
+    }
+
+    public static Builder builder(@NotNull ItemType type) {
         return new Builder(type);
     }
 
@@ -99,8 +110,8 @@ public class MenuItem {
         private final List<ClickAction> actions = new ArrayList<>(0);
         private Consumer<ItemStack> postBuildConsumer = null;
 
-        private Builder(Material type) {
-            this.itemStack = ItemStack.of(type);
+        private Builder(ItemType type) {
+            this.itemStack = type.createItemStack();
         }
 
         private Builder(Supplier<ItemStack> itemSupplier) {
