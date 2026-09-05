@@ -2,8 +2,8 @@ package dev.warriorrr.inventories.gui;
 
 import com.google.common.base.Preconditions;
 import dev.warriorrr.inventories.Inventories;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.TooltipDisplay;
+import dev.warriorrr.inventories.gui.frame.Framer;
+import dev.warriorrr.inventories.gui.frame.Framing;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -22,6 +22,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -36,7 +37,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supplier<MenuInventory> {
-    private static final ItemStack BACKGROUND_GLASS = MenuItem.builder(Material.GRAY_STAINED_GLASS_PANE).name(Component.empty()).mutateItem(item -> item.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build())).build().itemStack();
     private final Inventory inventory;
     private final int size;
     private final Map<Integer, List<ClickAction>> clickActions = new HashMap<>();
@@ -159,7 +159,7 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
         private final List<MenuItem> items = new ArrayList<>();
         private int size = 54;
         private Component title = Component.empty();
-        private @Nullable ItemStack backgroundItem;
+        private Framer framer = Framing.defaultFramer();
 
         private Builder() {}
 
@@ -201,8 +201,21 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
             return this;
         }
 
+        @ApiStatus.Obsolete(since = "1.1.4")
         public Builder backgroundItem(@Nullable ItemStack backgroundItem) {
-            this.backgroundItem = backgroundItem;
+            this.framer = backgroundItem == null ? Framing.blank() : Framing.fillEmptySpace(backgroundItem);
+            return this;
+        }
+
+        /**
+         * Sets the framer for this inventory. See {@link Framing} for more information on how to use it.
+         *
+         * @param framer The framer to set, must not be null.
+         * @return {@code this}
+         * @since 1.1.4
+         */
+        public Builder framer(final @NotNull Framer framer) {
+            this.framer = Objects.requireNonNull(framer, "framer");
             return this;
         }
 
@@ -223,16 +236,10 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
                     actions.put(slot, item.actions());
             }
 
-            for (int i = 0; i < size; i++) {
-                final ItemStack stack = inventory.getItem(i);
-
-                if (stack == null || stack.isEmpty()) {
-                    inventory.setItem(i, Objects.requireNonNullElse(this.backgroundItem, BACKGROUND_GLASS));
-                }
-            }
-
             MenuInventory menuInventory = new MenuInventory(inventory, title);
             menuInventory.addActions(actions);
+
+            framer.frame(menuInventory, menuInventory.inventory);
 
             return menuInventory;
         }
@@ -244,6 +251,7 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
         private Component title = Component.empty();
         private boolean showPageCount = true;
         private int maxRows = 5;
+        private Framer framer = Framing.blank();
 
         public PaginatorBuilder addItem(MenuItem item) {
             this.items.add(item);
@@ -288,6 +296,18 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
         public PaginatorBuilder maxRows(final @Range(from = 1, to = 5) int rows) {
             Preconditions.checkArgument(rows > 0 && rows < 6, "Rows must be between 1 and 5, got " + rows);
             this.maxRows = rows;
+            return this;
+        }
+
+        /**
+         * Sets the framer for this inventory. See {@link Framing} for more information on how to use it.
+         *
+         * @param framer The framer to set, must not be null.
+         * @return {@code this}
+         * @since 1.1.4
+         */
+        public PaginatorBuilder framer(final @NotNull Framer framer) {
+            this.framer = Objects.requireNonNull(framer, "framer");
             return this;
         }
 
@@ -339,6 +359,9 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
                             .action(ClickAction.sound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.stone_button.click_on"), Sound.Source.PLAYER, 1.0f, 1.0f)))
                             .slot(SlotAnchor.anchor(VerticalAnchor.fromBottom(0), HorizontalAnchor.fromRight(0)))
                             .build());
+
+                final MenuInventory built = builder.build();
+                framer.frame(built, built.inventory);
 
                 inventories[i] = builder.build();
             }
