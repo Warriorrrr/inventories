@@ -71,8 +71,8 @@ public interface ClickAction {
         return clickType(ClickType.LEFT, clickAction);
     }
 
-    static ClickTypeAction clickType(@NotNull ClickType type, @NotNull ClickAction rightClickAction) {
-        return new ClickTypeAction(type, rightClickAction);
+    static ClickTypeAction clickType(@NotNull ClickType type, @NotNull ClickAction clickAction) {
+        return new ClickTypeAction(type, clickAction);
     }
 
     static UserInputAction<?> userInput(Component title, Function<PlayerInput, InputResponse> inputFunction) {
