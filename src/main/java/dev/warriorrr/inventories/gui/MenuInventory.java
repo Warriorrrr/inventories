@@ -73,16 +73,20 @@ public class MenuInventory implements InventoryHolder, Iterable<ItemStack>, Supp
             clickActions.putAll(actions);
     }
 
-    public void addItem(@NotNull MenuItem item) {
-        final int slot = item.slot().resolve(this.size);
+    public void addItem(@NotNull MenuItem @NotNull... items) {
+        for (final MenuItem item : items) {
+            final int slot = item.slot().resolve(this.size);
 
-        if (slot > this.inventory.getSize() - 1)
-            return;
+            if (slot > this.inventory.getSize() - 1) {
+                continue;
+            }
 
-        this.inventory.setItem(slot, item.itemStack());
+            this.inventory.setItem(slot, item.itemStack());
 
-        if (!item.actions().isEmpty())
-            clickActions.put(slot, item.actions());
+            if (!item.actions().isEmpty()) {
+                clickActions.put(slot, item.actions());
+            }
+        }
     }
 
     /**
